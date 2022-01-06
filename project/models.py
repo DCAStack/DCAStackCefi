@@ -7,7 +7,6 @@ from project import SECRET_KEY
 from Crypto.Cipher import AES
 import scrypt, os, binascii
 from flask import current_app
-import pickle
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
@@ -114,12 +113,9 @@ class dcaSchedule(db.Model):
             raise Exception("Something went wrong with storing API information!")
 
 
-    def decrypt_API(encryptedMsg, password=SECRET_KEY,explicitPickle=False):
+    def decrypt_API(encryptedMsg, password=SECRET_KEY):
         try:
             if encryptedMsg:
-
-                if explicitPickle:
-                    encryptedMsg = pickle.loads(encryptedMsg)
 
                 (kdfSalt, ciphertext, nonce, authTag) = encryptedMsg
                 secretKey = scrypt.hash(password, kdfSalt, N=16384, r=8, p=1, buflen=32)

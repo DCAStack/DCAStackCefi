@@ -4,7 +4,7 @@ from .mailService import send_order_notification
 from project import SANDBOX_MODE
 from project.models import dcaSchedule
 
-def create_exchangeConnection(exchange_id,api_key, api_secret,api_pass,api_uid,sandboxMode=True,needBal=False,isEncrypted=True,explicitPickle=False):
+def create_exchangeConnection(exchange_id,api_key, api_secret,api_pass,api_uid,sandboxMode=True,needBal=False,isEncrypted=True):
 
     #retrieve exchange class
     exchange_class = getattr(ccxt, exchange_id)
@@ -17,10 +17,10 @@ def create_exchangeConnection(exchange_id,api_key, api_secret,api_pass,api_uid,s
 
         # decrypt to use
         if isEncrypted:
-            api_key = dcaSchedule.decrypt_API(api_key,explicitPickle=explicitPickle)
-            api_secret = dcaSchedule.decrypt_API(api_secret,explicitPickle=explicitPickle)
-            api_pass = dcaSchedule.decrypt_API(api_pass,explicitPickle=explicitPickle)
-            api_uid = dcaSchedule.decrypt_API(api_uid,explicitPickle=explicitPickle)
+            api_key = dcaSchedule.decrypt_API(api_key)
+            api_secret = dcaSchedule.decrypt_API(api_secret)
+            api_pass = dcaSchedule.decrypt_API(api_pass)
+            api_uid = dcaSchedule.decrypt_API(api_uid)
 
         #cast these to string to work with
         api_key = str(api_key)

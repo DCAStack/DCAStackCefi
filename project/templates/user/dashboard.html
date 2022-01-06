@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <h1 class="title">
+                <p id="portVal">Portfolio Value: $0</p>
+            </h1>
+        </div>
+    </div>
+
+    <div class="hero-foot">
+        <nav class="tabs is-toggle is-fullwidth is-large">
+            <div class="container">
+                <ul>
+                    <li class="tab is-active" onclick="openTab(event,'WebDev')"><a>Holdings</a></li>
+                    <li class="tab" onclick="openTab(event,'WebAud')"><a>Data</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</section>
+
+<div class="container section">
+    <div id="WebDev" class="content-tab">
+
+
+        <div class="chart-container" style="position: relative; height:50vh; width:80vw">
+            <canvas id="holdingsChart"></canvas>
+        </div>
+
+
+    </div>
+
+    <div id="WebAud" class="content-tab" style="display:none">
+
+        <table id="example" class="table is-striped" style="width:100%">
+
+        </table>
+
+
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        var _data;
+        var _labels;
+        var portfolioVal = 0;
+        var tableData;
+        $.ajax({
+            url: "/userinfo/account_balance",
+            type: "get",
+            data: { vals: '' },
+            success: function (response) {
+                full_data = JSON.parse(response.payload);
+                _data = full_data['values'];
+                _labels = full_data['coins'];
+                portfolioVal = full_data['total_balance'];
+                tableData = full_data['raw'];
+
+                const chartPlugin = {
+                    id: 'custom_canvas_background_color',
+                    beforeDraw: (chart) => {
+                        const ctx = chart.canvas.getContext('2d');
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'destination-over';
+                        // ctx.fillStyle = 'black';
+                        ctx.filter = 'none'; // remove filter
+                        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                        ctx.fillRect(0, 0, chart.width, chart.height);
+                        ctx.restore();
+                    }
+                };
+
+
+                const backgroundColorList = []
+                for (var i = 0; i < _labels.length; i++) {
+                    backgroundColorList.push(getRandomColor());
+                }
+
+                const holdingsChartData = {
+                    labels: _labels,
+                    datasets: [{
+                        label: 'My First Dataset',
+                        data: _data,
+                        backgroundColor: backgroundColorList,
+                        hoverOffset: 4
+                    }],
+                };
+
+
+                const holdingsChartOptions = {
+                    tooltips: {
+                        enabled: false
+                    },
+                    pieceLabel: {
+                        mode: 'value'
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                generateLabels: (chart) => {
+                                    const datasets = chart.data.datasets;
+                                    return datasets[0].data.map((data, i) => ({
+                                        text: `${chart.data.labels[i]}: $${data}`,
+                                        fillStyle: datasets[0].backgroundColor[i],
+                                    }))
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const holdingsChartConfig = {
+                    type: 'doughnut',
+                    data: holdingsChartData,
+                    plugins: [chartPlugin],
+                    options: holdingsChartOptions
+
+                };
+
+                const holdingsChart = new Chart(
+                    document.getElementById('holdingsChart'),
+                    holdingsChartConfig
+                );
+
+
+            },
+            beforeSend: function () {
+                // Code to display spinner
+                $('#loader').removeClass('hidden')
+            },
+            complete: function () {
+                // Code to hide spinner.
+                $('#loader').addClass('hidden')
+                document.getElementById("portVal").innerHTML = "Portfolio Value: $" + portfolioVal;
+
+                var table = dataTables_jquery('#example').DataTable({
+                    data: tableData,
+                    columns: [
+                        { title: "Crypto Asset" },
+                        { title: "Current Price" },
+                        { title: "Crypto Amount	" },
+                        { title: "USD Amount" },
+                    ],
+                    lengthChange: false,
+                    buttons: ['copy', 'excel', 'csv'],
+                    fixedHeader: {
+                        header: true,
+                        footer: true
+                    },
+                    responsive: true,
+                    "order": [[3, "desc"]]
+                });
+
+                // Insert at the top left of the table
+                table.buttons().container()
+                    .appendTo($('div.column.is-half', table.table().container()).eq(0));
+
+            }
+
+        });
+
+    });
+
+    function openTab(evt, tabName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("content-tab");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab");
+        for (i = 0; i < x.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " is-active";
+    }
+
+    function getRandomColor() {
+        let color = "#";
+        for (let i = 0; i < 3; i++)
+            color += ("0" + Math.floor(Math.random() * Math.pow(16, 2) / 2).toString(16)).slice(-2);
+        return color;
+    }
+
+
+
+</script>
+{% endblock %}

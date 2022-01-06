@@ -1,0 +1,9 @@
+auth/
+__pycache__/
+*.db
+*.sqlite
+celerybeat-schedule
+*.log
+.env
+*.pid
+.flaskenv

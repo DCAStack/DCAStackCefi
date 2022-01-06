@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Automate dollar cost averaging into your favorite crypto with DCA Stack - Completely free with support for Gemini, Coinbase, Binance, Kraken and 100 more!">
+    <title>DCA Stack | Automated Dollar Cost Averaging Bot for Crypto</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/bm/jq-3.6.0/jszip-2.5.0/dt-1.11.3/b-2.1.1/b-html5-2.1.1/fh-3.2.0/r-2.2.9/datatables.min.css" />
+    <script type="text/javascript"
+        src="https://cdn.datatables.net/v/bm/jq-3.6.0/jszip-2.5.0/dt-1.11.3/b-2.1.1/b-html5-2.1.1/fh-3.2.0/r-2.2.9/datatables.min.js"></script>
+    <script type="text/javascript">
+        var dataTables_jquery = $.noConflict(true);
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bulma-toast@2.4.1/dist/bulma-toast.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.0.0/animate.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/4c8f86070d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/main.min.css">
+    <link href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css" rel="Stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"
+        integrity="sha256-xH4q8N0pEzrZMaRmd7gQVcTZiFei+HfRTBPJ1OGXC0k=" crossorigin="anonymous"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VZ7G7LGHG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2VZ7G7LGHG');
+    </script>
+
+
+    <style>
+        .cell-breakWord {
+            word-wrap: break-word;
+            max-width: 1px;
+        }
+
+        .threetier {
+            padding: 50px;
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        footer {
+            margin-top: auto;
+        }
+
+        .card+.card {
+            margin-top: 20px;
+        }
+
+        .background {
+            background-image: url('/img/background.png');
+            background-repeat: repeat;
+        }
+
+        .lds-dual-ring.hidden {
+            display: none;
+        }
+
+        .lds-dual-ring {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 5% auto;
+            border-radius: 50%;
+            border: 6px solid #fff;
+            border-color: #fff transparent #fff transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+
+        @keyframes lds-dual-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, .8);
+            z-index: 999;
+            opacity: 1;
+            transition: all 0.5s;
+        }
+    </style>
+
+    {{ moment.include_moment() }}
+</head>
+
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('main.index') }}">
+            Home
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard.dashboard_main') }}" class="navbar-item">
+                Dashboard
+            </a>
+            <a href="{{ url_for('dca.dcaSetup') }}" class="navbar-item">
+                Trade
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('main.donate') }}" class="navbar-item">
+                Support Us
+            </a>
+
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                    Help
+                </a>
+                <div class="navbar-dropdown">
+                    <a href="https://docs.dcastack.com/" target="_blank" class="navbar-item" rel="noopener">
+                        Documentation
+                    </a>
+                    <a href="{{ url_for('main.contact') }}" class="navbar-item">
+                        Contact Us
+                    </a>
+                    <hr class="navbar-divider">
+                    <a href="https://status.dcastack.com/" target="_blank" class="navbar-item" rel="noopener">
+                        Server Status
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.signup') }}" class="button is-white">
+                        <strong>Get Started</strong>
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="button is-white">
+                        Log in
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if current_user.is_authenticated %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Account
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                            Profile
+                        </a>
+
+
+                        <hr class="navbar-divider">
+                        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            Logout
+                        </a>
+
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</nav>
+<div id="loader" class="lds-dual-ring hidden overlay"></div>
+
+<body>
+    <section class="hero is-black is-fullheight is-transparent">
+        <div class="hero-body background">
+            <div class="container has-text-centered">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+        </div>
+
+    </section>
+
+
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+
+                    // Get the target from the "data-target" attribute
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+
+                    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+
+                });
+            });
+        }
+
+    });
+</script>
+
+</html>

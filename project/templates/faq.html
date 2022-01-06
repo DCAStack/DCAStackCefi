@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+<div class="column landing-caption">
+    <h1 class="title is-1 is-light is-semibold is-spaced main-title">FAQ Me!</h1>
+
+</div>
+
+<section class="section">
+	<div class="container">
+
+        <div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">What is DCA?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Content goes here <small>Small text</small>
+				</div>
+			</div>
+		</div>
+
+        <div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">How do I DCA?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Content goes here <small>Small text</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">What exchanges do you support?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Content goes here <small>Small text</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">Where do I find the API stuff?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Content goes here <small>Small text</small>
+				</div>
+			</div>
+		</div>
+
+		<div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">What permissions should I enable on the API key?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Some more content. Look at all this whitespace.
+				</div>
+			</div>
+		</div>
+
+        <div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">Is this safe to use?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					Some more content. Look at all this whitespace.
+				</div>
+			</div>
+		</div>
+
+        <div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">What are your terms and conditions?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					<p>Please visit <a href="https://www.termsandconditionsgenerator.com/live.php?token=VqfK6lWm26qxM7wXyVhENzvXQLESCyRI"><u>our terms and conditions here</u></a>.</p>
+				</div>
+			</div>
+		</div>
+
+        <div class="card is-fullwidth">
+			<header class="card-header">
+				<p class="card-header-title card-toggle">What is your privacy policy?</p>
+				<a class="card-header-icon card-toggle">
+					<i class="fa fa-angle-down"></i>
+				</a>
+			</header>
+			<div class="card-content is-hidden">
+				<div class="content">
+					<p>Please visit <a href="https://www.privacypolicygenerator.info/live.php?token=kNmsbk0brxowGHkbvnV5z6zP5QIrQ0qC"><u>our privacy policy here</u></a>.</p>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+	let cardToggles = document.getElementsByClassName('card-toggle');
+	for (let i = 0; i < cardToggles.length; i++) {
+		cardToggles[i].addEventListener('click', e => {
+			e.currentTarget.parentElement.parentElement.childNodes[3].classList.toggle('is-hidden');
+		});
+	}
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Sign Up</h3>
+    <div class="box">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" action="/signup">
+            <div class="field">
+                <div class="control">
+                    {{ form.emailField (class_='input is-large',placeholder_="Email") }}
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    {{ form.nameField (class_='input is-large',placeholder_="Name") }}
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    {{ form.passwordField (class_='input is-large',placeholder_="Password") }}
+                    {% for error in form.passwordField.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    {{ form.password_confirm (class_='input is-large',placeholder_="Repeat Password") }}
+                    {% for error in form.password_confirm.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="field">
+                <a href="{{ url_for('auth.login') }}" style="color:#0207ff">Already Registered?</a>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Login</h3>
+    <div class="box">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="notification is-danger">
+                {{ messages[0] }} <a href="{{ url_for('auth.reset_password') }}">Forget Password?</a>
+            </div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" action="/login">
+            <div class="field">
+                <div class="control">
+                    {{ form.emailField  (class_='input is-large',placeholder_="Email") }}
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    {{ form.passwordField  (class_='input is-large',placeholder_="Password") }}                
+                </div>
+            </div>
+            <div class="field">
+                <a href="{{ url_for('auth.reset_password') }}" style="color:#0207ff">Forget Password</a>
+                or are you
+                <a href="{{ url_for('auth.signup') }}" style="color:#0207ff">Not Registered?</a>
+
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

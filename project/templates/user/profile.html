@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Welcome, {{ name }}!
+</h1>
+
+<section>
+  <form action="/reset">
+<button class="button is-info is-large" id="lanuchModal">Change Password</button>
+</form>
+</section>
+{% endblock %}

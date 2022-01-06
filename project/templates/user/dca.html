@@ -1,0 +1,517 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card ">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Add New DCA Schedule</p>
+      <button class="delete" id="closetop" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="content">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="notification is-warning" id="flash">
+          {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {{ form.csrf_token }}
+        <form name='form2' id='form2' method="POST" action="/dca" onSubmit="return postDCA()">
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Schedule Name</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-narrow">
+                <div class="control">
+                  {{ form.dca_instance (class_='input') }}
+                </div>
+                <p class="help" style="color:black;">Give your schedule a memorable name.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Exchange</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-narrow">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    {{ form.exchange_id }}
+                  </div>
+                  <p class="help" style="color:black;">API can usually be found on the settings page.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">API Key</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-large">
+                <div class="control">
+                  {{ form.api_key (class_='input') }}
+                </div>
+                <p class="help" style="color:black;">Please enable all trading permissions and account balances.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">API Secret</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-large">
+                <div class="control">
+                  {{ form.api_secret (class_='input')}}
+                </div>
+                <p class="help" style="color:black;">Do NOT enable any withdrawal permissions!</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal is-hidden" id=API_PASS>
+            <div class="field-label is-normal">
+              <label class="label">API Passphrase</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-narrow">
+                <div class="control">
+                  {{ form.api_pass (class_='input')}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal is-hidden" id=API_UID>
+            <div class="field-label is-normal">
+              <label class="label">API UID</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-narrow">
+                <div class="control">
+                  {{ form.api_uid (class_='input')}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Trading Pair</label>
+            </div>
+            <div class="field-body">
+              <div class="field is-narrow">
+                <div class="control">
+                  {{ form.trading_pairs (class_='input')}}
+                </div>
+                <p class="help" style="color:black;">Format is Crypto/Fiat.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Purchase Amount</label>
+            </div>
+            <div class="field-body">
+
+              <div class="field is-narrow">
+                <div class="control">
+                  {{ form.dca_amount (class_='input calcAmt')}}
+                </div>
+                <p class="help" style="color:black;">Your FIAT purchase amount.</p>
+              </div>
+
+              <div class="field-label is-normal">
+                <label class="label">Every</label>
+              </div>
+              <div class="field">
+                <div class="select is-fullwidth">
+                  {{ form.dca_interval (class_='calcAmt')}}
+                </div>
+                <p class="help" style="color:black;">Your purchase interval.</p>
+              </div>
+            </div>
+          </div>
+
+    </section>
+
+
+    <footer class="modal-card-foot buttons is-centered">
+      <button class="button is-success">Start</button>
+      </form>
+      <button class="button is-warning" id="closebtn">Cancel</button>
+      <a href="https://docs.dcastack.com/guides/creating-your-first-schedule" target="_blank" class="button is-info" rel="noopener">
+        Help!
+      </a>
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+
+      <label class="label">Monthly Budget: $ <span id="monthlyBudget">0</span></label>
+
+    </footer>
+
+  </div>
+
+</div>
+
+<section class="section">
+
+  <h1 class="title">Running Schedules</h1>
+
+  <button class="button is-info is-large" id="lanuchModal">Add New Schedule</button>
+  <br></br>
+
+  <div id="dcaTable">
+    <div class="table-container">
+      <div class="b-table">
+        <div class="table-wrapper has-mobile-cards">
+          <table class="table is-fullwidth is-striped is-hoverable is-fullwidth is-bordered" id="dcaScheduleTable">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Instance</th>
+                <th>Exchange</th>
+                <th>Trading Pair</th>
+                <th>DCA Budget</th>
+                <th>Frequency</th>
+                <th>Monthly Budget</th>
+                <th>Started</th>
+                <th>Last Run</th>
+                <th>Next Run</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+              {% for dca_scheduleRows in dca_scheduleQuery %}
+              <tr>
+                <td data-label="Status" class="Status">{{ dca_scheduleRows.isActive }}</td>
+                <td data-label="Instance" class="Instance">{{ dca_scheduleRows.dca_instance }}</td>
+                <td data-label="Exchange" class="Exchange">{{ dca_scheduleRows.exchange_id }}</td>
+                <td data-label="TradingPair" class="TradingPair">{{ dca_scheduleRows.trading_pair }}</td>
+                <td data-label="DCA Budget" class="DCABudget">${{ dca_scheduleRows.dca_budget }}</td>
+                <td data-label="Frequency" class="Frequency">Every {{ dca_scheduleRows.dca_frequency }}</td> 
+                <td data-label="Monthly Budget" class="MonthlyBudget">${{ (dca_scheduleRows.dca_budget|int) * (30/(dca_scheduleRows.dca_frequency.split()[0]|int)) }}</td> 
+                <td data-label="Started" class="Started">{{ moment(dca_scheduleRows.dca_firstRun).format('MMM Do YYYY,
+                  h:mm a') }}</td>
+                <td data-label="Last Run" class="Last Run">{{ moment(dca_scheduleRows.dca_lastRun).format('MMM Do YYYY,
+                  h:mm a') }}</td>
+                <td data-label="Next Run" class="Next Run">{{ moment(dca_scheduleRows.dca_nextRun).format('MMM Do YYYY,
+                  h:mm a') }}</td>
+                <td class="is-actions-cell">
+                  <div class="buttons is-centered">
+
+                    <div class="field is-grouped">
+
+                      {% if (dca_scheduleRows.isActive == "Running") %}
+                      <p class="control">
+                      <form method="POST" action="{{ url_for('dca.pause_dcaSchedule', id=dca_scheduleRows.id) }}"
+                        onSubmit="return confirm('Are you sure you wish to pause this schedule? This will pause the schedule until you choose to resume!');">
+                        <button type="submit" class="button is-warning is-small is-fullwidth" id="pause_row_dca">
+                          <span class="icon is-small">
+                            <i class="fas fa-pause"></i>
+                          </span>
+                        </button>
+                      </form>
+                      </p>
+                      {% else %}
+
+                      <p class="control">
+                      <form method="POST" action="{{ url_for('dca.resume_dcaSchedule', id=dca_scheduleRows.id) }}"
+                        onSubmit="return confirm('Are you sure you wish to start this schedule? This will start the schedule if there are enough funds!');">
+                        <button type="submit" class="button is-success is-small is-fullwidth" id="start_row_dca">
+                          <span class="icon is-small">
+                            <i class="fas fa-play"></i>
+                          </span>
+                        </button>
+                      </form>
+
+                      </p>
+                      {% endif %}
+
+                      <!-- <p class="control">
+                        <form method="POST" action="{{ url_for('dca.delete_dcaSchedule', id=dca_scheduleRows.id) }}"
+                          onSubmit="return confirm('Are you sure you wish to delete this schedule? This will delete all API details!');">
+                          <button type="submit" class="button is-warning is-small is-fullwidth" id="delete_row_dca">
+                            <span class="icon is-small">
+                              <i class="fas fa-pen"></i>
+                            </span>
+                          </button>
+                        </form>
+                      </p> -->
+
+                      <p class="control">
+                      <form method="POST" action="{{ url_for('dca.delete_dcaSchedule', id=dca_scheduleRows.id) }}"
+                        onSubmit="return confirm('Are you sure you wish to delete this schedule? This will delete all API details!');">
+                        <button type="submit" class="button is-danger is-small is-fullwidth" id="delete_row_dca">
+                          <span class="icon is-small">
+                            <i class="fas fa-trash"></i>
+                          </span>
+                        </button>
+                      </form>
+                      </p>
+
+
+                    </div>
+                  </div>
+
+
+        </div>
+        </td>
+        </tr>
+        {% endfor %}
+
+
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<script>
+
+  function loading() {
+    $('#loader').removeClass('hidden')
+  }
+
+  function postDCA() {
+    if (confirm('Hitting start will place an order!  Are you ready to begin?') == true) {
+      loading()
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+
+  function instance_run_error(msg) {
+    bulmaToast.toast({
+      message: 'Instance <strong>' + msg + '</strong> could not start! Please double check funds available or increase order size.',
+      type: 'is-warning',
+      duration: 10000,
+      position: "top-center",
+      dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' },
+    });
+  };
+
+  function instance_run_success(msg) {
+    bulmaToast.toast({
+      message: 'Instance <strong>' + msg + '</strong> started succesfully!',
+      type: 'is-success',
+      duration: 10000,
+      position: "top-center",
+      dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' },
+    })
+
+  };
+
+  function instance_run_paused(msg) {
+    bulmaToast.toast({
+      message: 'Instance <strong>' + msg + '</strong> was paused!',
+      type: 'is-success',
+      duration: 10000,
+      position: "top-center",
+      dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' },
+    })
+
+  };
+
+  function instance_run_deleted(msg) {
+    bulmaToast.toast({
+      message: 'Instance <strong>' + msg + '</strong> deleted!',
+      type: 'is-info',
+      duration: 10000,
+      position: "top-center",
+      dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' },
+    })
+
+  };
+
+
+  let exchange_select = document.getElementById("exchange_id");
+  let tradingPair_select = document.getElementById('trading_pairs');
+  let every_interval = document.getElementById('dca_interval');
+
+  every_interval.onchange = function () {
+    calculateMonthlyBudget();
+  }
+
+  state = exchange_select.value;
+
+  $(function () {
+    $("#autocomplete").autocomplete({
+      source: function (request, response) {
+        $.getJSON("{{url_for('dca.autocomplete')}}", {
+          q: request.term, // in flask, "q" will be the argument to look for using request.args
+          exchange_id: state,
+        }, function (data) {
+          response(data.matching_results); // matching_results from jsonify
+        });
+      },
+      minLength: 0,
+      select: function (event, ui) {
+        console.log(ui.item.value); // not in your question, but might help later
+      }
+    });
+  })
+
+  $("#lanuchModal").click(function () {
+    $(".modal").addClass("is-active");
+  });
+
+  $(".modal-close").click(function () {
+    $(".modal").removeClass("is-active");
+  });
+
+  $("#closebtn").click(function () {
+    $(".modal").removeClass("is-active");
+  });
+  $("#closetop").click(function () {
+    $(".modal").removeClass("is-active");
+  });
+
+  $(document).keydown(function (event) {
+    if (event.keyCode == 27) {
+      $(".modal").removeClass("is-active");
+    }
+  });
+
+
+  exchange_select.onchange = function () {
+
+    state = exchange_select.value;
+
+    fetch("{{ url_for('dca.get_exchange_apiNeededCreds', exchange_id='state') }}".replace("state", state)).then(function (response) {
+
+      response.json().then(function (data) {
+
+        if (data.exchange_apiNeeded.uid == true) {
+          $("#API_UID").removeClass("is-hidden");
+        }
+        else {
+          $("#API_UID").addClass("is-hidden");
+        }
+
+        if (data.exchange_apiNeeded.password == true) {
+          $("#API_PASS").removeClass("is-hidden");
+        }
+        else {
+          $("#API_PASS").addClass("is-hidden");
+        }
+
+      })
+
+    });
+
+
+
+
+  }
+
+
+  function calculateMonthlyBudget() {
+
+    var monthlyBudget = 0;
+    var amount = 0;
+    var interval = 0;
+    //iterate through each textboxes and add the values
+    $(".calcAmt").each(function () {
+
+      if (!isNaN(this.value) && this.value.length != 0) {
+        amount = parseFloat(this.value);
+      }
+      else {
+        interval = this.value.replace(/\D+$/g, "")
+      }
+      monthlyBudget = (amount) * (30 / interval)
+
+    });
+    //.toFixed() method will roundoff the final sum to 2 decimal places
+    $("#monthlyBudget").html(monthlyBudget.toFixed(2));
+  }
+
+  $(document).ready(function () { // When page finished loading
+
+    //iterate through each textboxes and add keyup
+    //handler to trigger sum event
+    $(".calcAmt").each(function () {
+
+      $(this).keyup(function () {
+        calculateMonthlyBudget();
+      });
+    });
+
+
+    if ($('#flash').length) { // if there is an DOM that has class has-error
+      $(".modal").addClass("is-active");
+    }
+
+    if ("{{ instanceStatus.status }}" == "True") {
+      instance_run_success("{{ instanceStatus.name }}");
+    }
+    if ("{{ instanceStatus.status }}" == "Pause") {
+      instance_run_paused("{{ instanceStatus.name }}");
+    }
+    if ("{{ instanceStatus.status }}" == "Error") {
+      instance_run_error("{{ instanceStatus.name }}");
+    }
+    if ("{{ instanceStatus.status }}" == "Delete") {
+      instance_run_deleted("{{ instanceStatus.name }}");
+    }
+
+    state = exchange_select.value;
+
+    fetch("{{ url_for('dca.get_exchange_apiNeededCreds', exchange_id='state') }}".replace("state", state)).then(function (response) {
+
+      response.json().then(function (data) {
+
+        if (data.exchange_apiNeeded.uid == true) {
+          $("#API_UID").removeClass("is-hidden");
+        }
+        else {
+          $("#API_UID").addClass("is-hidden");
+        }
+
+        if (data.exchange_apiNeeded.password == true) {
+          $("#API_PASS").removeClass("is-hidden");
+        }
+        else {
+          $("#API_PASS").addClass("is-hidden");
+        }
+
+      })
+
+    });
+
+  });
+
+</script>
+
+{% endblock %}

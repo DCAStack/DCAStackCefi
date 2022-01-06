@@ -18,7 +18,7 @@ If you find any bugs, please feel free to open an issue and include as much deta
 
 ## How can I verify that your website is running the code on the repo and not something malicious?
 
-Excellent question and totally valid concern. We can verify this directly from github!
+Excellent question and totally valid concern. We can verify this directly from github! You must be signed in on github btw.
 
 Simple answer: On the right hand side of the screen (or left), there will be a section called Environments. Click on it. You'll see a button called View Deployment. Click on that and that'll take you to the website that this repo builds. The exact code you see on the repo is what is contained in the deployment since it is an automated process. 
 

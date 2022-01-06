@@ -20,6 +20,7 @@
         {% endwith %}
         {{ form.csrf_token }}
         <form name='form2' id='form2' method="POST" action="/dca" onSubmit="return postDCA()">
+          {{ form.csrf_token }}
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">Schedule Name</label>
@@ -151,7 +152,8 @@
       <button class="button is-success">Start</button>
       </form>
       <button class="button is-warning" id="closebtn">Cancel</button>
-      <a href="https://docs.dcastack.com/guides/creating-your-first-schedule" target="_blank" class="button is-info" rel="noopener">
+      <a href="https://docs.dcastack.com/guides/creating-your-first-schedule" target="_blank" class="button is-info"
+        rel="noopener">
         Help!
       </a>
       &nbsp;
@@ -206,8 +208,9 @@
                 <td data-label="Exchange" class="Exchange">{{ dca_scheduleRows.exchange_id }}</td>
                 <td data-label="TradingPair" class="TradingPair">{{ dca_scheduleRows.trading_pair }}</td>
                 <td data-label="DCA Budget" class="DCABudget">${{ dca_scheduleRows.dca_budget }}</td>
-                <td data-label="Frequency" class="Frequency">Every {{ dca_scheduleRows.dca_frequency }}</td> 
-                <td data-label="Monthly Budget" class="MonthlyBudget">${{ (dca_scheduleRows.dca_budget|int) * (30/(dca_scheduleRows.dca_frequency.split()[0]|int)) }}</td> 
+                <td data-label="Frequency" class="Frequency">Every {{ dca_scheduleRows.dca_frequency }}</td>
+                <td data-label="Monthly Budget" class="MonthlyBudget">${{ (dca_scheduleRows.dca_budget|int) *
+                  (30/(dca_scheduleRows.dca_frequency.split()[0]|int)) }}</td>
                 <td data-label="Started" class="Started">{{ moment(dca_scheduleRows.dca_firstRun).format('MMM Do YYYY,
                   h:mm a') }}</td>
                 <td data-label="Last Run" class="Last Run">{{ moment(dca_scheduleRows.dca_lastRun).format('MMM Do YYYY,
@@ -228,6 +231,8 @@
                             <i class="fas fa-pause"></i>
                           </span>
                         </button>
+                        {{ form.csrf_token }}
+
                       </form>
                       </p>
                       {% else %}
@@ -240,21 +245,12 @@
                             <i class="fas fa-play"></i>
                           </span>
                         </button>
+                        {{ form.csrf_token }}
+
                       </form>
 
                       </p>
                       {% endif %}
-
-                      <!-- <p class="control">
-                        <form method="POST" action="{{ url_for('dca.delete_dcaSchedule', id=dca_scheduleRows.id) }}"
-                          onSubmit="return confirm('Are you sure you wish to delete this schedule? This will delete all API details!');">
-                          <button type="submit" class="button is-warning is-small is-fullwidth" id="delete_row_dca">
-                            <span class="icon is-small">
-                              <i class="fas fa-pen"></i>
-                            </span>
-                          </button>
-                        </form>
-                      </p> -->
 
                       <p class="control">
                       <form method="POST" action="{{ url_for('dca.delete_dcaSchedule', id=dca_scheduleRows.id) }}"
@@ -264,6 +260,8 @@
                             <i class="fas fa-trash"></i>
                           </span>
                         </button>
+                        {{ form.csrf_token }}
+
                       </form>
                       </p>
 

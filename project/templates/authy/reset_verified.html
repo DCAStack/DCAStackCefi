@@ -4,6 +4,8 @@
 <div class="column is-4 is-offset-4">
   <h3 class="title">Enter New Password</h3>
   <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
     <div class="field">
       <div class="control">
         <input class="input is-large" type="password" name="password" autofocus="" required>

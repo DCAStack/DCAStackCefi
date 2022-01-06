@@ -6,21 +6,23 @@
     <div class="box">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="notification is-danger">
-                {{ messages[0] }} <a href="{{ url_for('auth.reset_password') }}">Forget Password?</a>
-            </div>
+        <div class="notification is-danger">
+            {{ messages[0] }} <a href="{{ url_for('auth.reset_password') }}">Forget Password?</a>
+        </div>
         {% endif %}
         {% endwith %}
         <form method="POST" action="/login">
+            {{ form.csrf_token }}
+
             <div class="field">
                 <div class="control">
-                    {{ form.emailField  (class_='input is-large',placeholder_="Email") }}
+                    {{ form.emailField (class_='input is-large',placeholder_="Email") }}
                 </div>
             </div>
 
             <div class="field">
                 <div class="control">
-                    {{ form.passwordField  (class_='input is-large',placeholder_="Password") }}                
+                    {{ form.passwordField (class_='input is-large',placeholder_="Password") }}
                 </div>
             </div>
             <div class="field">

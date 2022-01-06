@@ -8,7 +8,8 @@
 
 <section>
   <form action="/reset">
-<button class="button is-info is-large" id="lanuchModal">Change Password</button>
-</form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <button class="button is-info is-large" id="lanuchModal">Change Password</button>
+  </form>
 </section>
 {% endblock %}

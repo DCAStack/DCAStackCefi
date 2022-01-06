@@ -14,7 +14,9 @@ from flask_moment import Moment
 from flask_executor import Executor
 from sentry_sdk.integrations.flask import FlaskIntegration
 import sentry_sdk
+from flask_wtf.csrf import CSRFProtect
 
+csrf = CSRFProtect()
 executor = Executor()
 secure_headers = secure.Secure()
 SANDBOX_MODE = Config.SET_SANDBOX
@@ -84,7 +86,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     moment.init_app(app)
     executor.init_app(app)
-
+    csrf.init_app(app)
 
     login_manager.session_protection = "strong"
     login_manager.login_view = 'auth.login'

@@ -31,7 +31,7 @@ login_manager = LoginManager()
 migrate = Migrate(compare_type=True)
 moment = Moment()
 DEBUG = True
-
+BEAT_INTERVAL = 5 #5 minutes
 
 if not DEBUG_MODE:
     sentry_sdk.init(
@@ -61,7 +61,7 @@ def create_app(config_class=Config):
         beat_schedule={
             'periodic_task': {
                 'task': 'project.services.dcaService.run_dcaSchedule',
-                'schedule': crontab(minute='*/5')
+                'schedule': crontab(minute='*/{}'.format(BEAT_INTERVAL))
             }
         }
     )

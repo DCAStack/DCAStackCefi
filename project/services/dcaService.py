@@ -1,4 +1,4 @@
-from project import celery, db
+from project import celery, db, BEAT_INTERVAL
 from project.models import User
 from project.models import dcaSchedule
 import datetime
@@ -22,7 +22,8 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
 
         current_app.logger.info("Placing order for instance: {} {} {} {}".format(subQuery.id, exchange_class_set, subQuery.trading_pair, subQuery.dca_budget))
 
-        if (datetime.datetime.now() > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
+        #fix order drift
+        if (datetime.datetime.now() + datetime.timedelta(minutes = BEAT_INTERVAL) > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
 
             orderStatus = place_market_order(exchange_class_set,trading_pair, dcaAmount,user)
             current_app.logger.info("Order status is: {}".format(orderStatus))

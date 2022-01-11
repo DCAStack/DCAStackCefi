@@ -23,7 +23,7 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
         current_app.logger.info("Placing order for instance: {} {} {} {}".format(subQuery.id, exchange_class_set, subQuery.trading_pair, subQuery.dca_budget))
 
         #fix order drift
-        if ( (datetime.datetime.now() + datetime.timedelta(minutes = 30) ) > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
+        if ( (datetime.datetime.now() + datetime.timedelta(minutes = 30)) > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
 
             orderStatus = place_market_order(exchange_class_set,trading_pair, dcaAmount,user)
             current_app.logger.info("Order status is: {}".format(orderStatus))
@@ -95,7 +95,7 @@ def run_dcaSchedule():
         current_app.logger.info("Retrieved query of size: {}".format(len(getAll)))
         
         for subQuery in getAll:
-            if datetime.datetime.now() > subQuery.dca_nextRun and subQuery.isActive == True: #check if it's ready
+            if (datetime.datetime.now() + datetime.timedelta(minutes = 30)) > subQuery.dca_nextRun and subQuery.isActive == True: #check if it's ready
 
                 current_app.logger.info("Running schedule for instance {}".format(subQuery.id))
 

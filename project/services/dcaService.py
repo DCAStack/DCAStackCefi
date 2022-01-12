@@ -22,8 +22,7 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
 
         current_app.logger.info("Placing order for instance: {} {} {} {}".format(subQuery.id, exchange_class_set, subQuery.trading_pair, subQuery.dca_budget))
 
-        #fix order drift
-        if ( (datetime.datetime.now() + datetime.timedelta(minutes = 30)) > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
+        if (datetime.datetime.now() > subQuery.dca_nextRun and subQuery.isActive == True) or bypassAsync: #check if already ran async
 
             orderStatus = place_market_order(exchange_class_set,trading_pair, dcaAmount,user)
             current_app.logger.info("Order status is: {}".format(orderStatus))
@@ -31,14 +30,16 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
             if orderStatus:
                 #update last run, next run
                 currentDate = datetime.datetime.now()
+                nextRun = newSession.dca_nextRun #increment nextRun to prevent order drift
+
                 dca_interval_int = [int(s)for s in subQuery.dca_frequency.split() if s.isdigit()][0]
                 if "Days" in subQuery.dca_frequency:
-                    nextRunTime = currentDate + datetime.timedelta(days=dca_interval_int)
+                    nextRunTime = nextRun + datetime.timedelta(days=dca_interval_int)
                 else:
-                    nextRunTime = currentDate + datetime.timedelta(minutes=dca_interval_int)
+                    nextRunTime = nextRun + datetime.timedelta(minutes=dca_interval_int)
 
                 newSession.dca_nextRun = nextRunTime
-                newSession.dca_lastRun = currentDate
+                newSession.dca_lastRun = currentDate #always true execution time
                 db.session.commit()
 
                 current_app.logger.info("Succeeded instance: {}".format(subQuery.id))
@@ -95,7 +96,7 @@ def run_dcaSchedule():
         current_app.logger.info("Retrieved query of size: {}".format(len(getAll)))
         
         for subQuery in getAll:
-            if (datetime.datetime.now() + datetime.timedelta(minutes = 30)) > subQuery.dca_nextRun and subQuery.isActive == True: #check if it's ready
+            if datetime.datetime.now() > subQuery.dca_nextRun and subQuery.isActive == True: #check if it's ready
 
                 current_app.logger.info("Running schedule for instance {}".format(subQuery.id))
 

@@ -106,11 +106,13 @@ def run_dcaSchedule():
             else:
                 current_app.logger.info("Not ready yet Instance: {}".format(subQuery.id))
 
-        db.session.close()
-
     except Exception as e:
-        current_app.logger.exception("dca scheduled failed!")          
+        current_app.logger.exception("dca scheduled failed!")
+        db.session.rollback() #rollback in crash
 
         raise Exception("run_dcaSchedule Something went wrong !")
+
+    finally:
+        db.session.close()
 
 

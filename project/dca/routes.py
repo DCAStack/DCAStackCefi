@@ -95,6 +95,7 @@ def resume_dcaSchedule(id):
 
                     #run synchronosly cause we need results in realtime and bypass async checks
                     subQuery.isActive = True
+                    subQuery.dca_nextRun = datetime.datetime.now() #move next run to current date so that it will update
                     db.session.commit()
                     instanceStatus = async_placeMarketOrder_updateDb.run(subQuery,User.get_user(subQuery.user_id),True)
 

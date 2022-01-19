@@ -11,9 +11,8 @@ def send_async_email(msg):
     if not DEBUG_MODE:
         try:
             mail.send(msg)
-            current_app.logger.info("Actually sending email: {}".format(msg))
         except Exception as e:
-            current_app.logger.exception("async mail error")
+            current_app.logger.exception("async mail error: {}".format(msg))
     else:
         current_app.logger.info("Mocking email: {}".format(msg))
     

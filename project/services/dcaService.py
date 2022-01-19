@@ -50,8 +50,6 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
                 current_app.logger.warning("Failed order placement for instance: {}".format(subQuery.id))
                 raise Exception("Order failed!")
 
-        else:
-            current_app.logger.info("async_placeMarketOrder_updateDb Not ready yet Instance: {}".format(subQuery.id))
 
     except ccxt.InsufficientFunds as e:
         current_app.logger.warning("run_dcaSchedule InsufficientFunds")
@@ -102,9 +100,6 @@ def run_dcaSchedule():
 
                 #make this async so we can spawn multiple workers and do better order notifs
                 async_placeMarketOrder_updateDb.delay(subQuery,User.get_user(subQuery.user_id))
-
-            else:
-                current_app.logger.info("Not ready yet Instance: {}".format(subQuery.id))
 
     except Exception as e:
         current_app.logger.exception("dca scheduled failed!")

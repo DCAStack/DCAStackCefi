@@ -25,3 +25,7 @@ Simple answer: On the right hand side of the screen (or left), there will be a s
 Better answer: The way this repo is configured is that whenever the main branch receives a new commit, it will trigger an automated workflow. This workflow will rebuild the repo and automatically deploy the code to the server. So the code you see in the repo is the exact same code that is being served by the server since it is a complete automated process Github offers it's users (along with heroku). 
 
 You will notice that this takes you to dcastack.herokuapp.com which is the direct connection to the heroku platform on which this entire website is hosted. This is the exact same as the dcastack.com domain. The only difference is the fact that dcastack.com is more convenient for SEO, spreading the word and enhanced with cloudflare.
+
+## What if I wanted to self host?
+
+WIP

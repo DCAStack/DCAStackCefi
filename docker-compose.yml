@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+
+  web:
+    build: .
+    image: web
+    container_name: web
+    ports:
+      - 5004:5000
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    command: celery worker -A celery_worker.celery -f celeryLogs.log --loglevel=info --concurrency=4
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - C_FORCE_ROOT="true"
+    depends_on:
+      - web
+      - redis
+
+  beat:
+    build: .
+    command: celery -A celery_worker.celery beat
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - web
+      - redis
+      - worker
+
+  dashboard:
+    build: .
+    command:  flower -A celery_worker.celery --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - 5556:5555
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - web
+      - redis
+      - worker
+
+  migrations:
+    build: .
+    image: web
+    command: >
+      sh -c "python manage.py db migrate &&
+             python manage.py db upgrade"
+    depends_on:
+      - web
+
+  redis:
+    image: redis:6-alpine

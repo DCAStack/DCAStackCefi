@@ -6,6 +6,7 @@ from project import db
 from project.services.mailService import send_reset_password
 from project.authy import bp
 from project.authy.forms import LoginForm, SignupForm
+from flask import current_app
 
 @bp.route('/reset', methods=['GET', 'POST'])
 def reset_password():
@@ -77,32 +78,40 @@ def signup():
 
     if request.method == 'POST':
 
-        email = signupForm.emailField.data
-        password = signupForm.passwordField.data
-        name = signupForm.nameField.data
-        repeatPassword = signupForm.password_confirm.data
-        user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
 
-        if user: # if a user is found, we want to redirect back to signup page so user can try again  
-            flash('Email address already exists! Please login instead :)')
-            return render_template("authy/signup.html",form=signupForm)
+        try:
 
-        if repeatPassword != password:
-            flash('Passwords do not match!')
-            repopSignupForm = SignupForm()
-            repopSignupForm.emailField.data = signupForm.emailField.data
-            repopSignupForm.nameField.data = signupForm.nameField.data
-            return render_template("authy/signup.html",form=repopSignupForm)
+            email = signupForm.emailField.data
+            password = signupForm.passwordField.data
+            name = signupForm.nameField.data
+            repeatPassword = signupForm.password_confirm.data
+            user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
 
-        # create new user with the form data. Hash the password so plaintext version isn't saved.
-        new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
+            if user: # if a user is found, we want to redirect back to signup page so user can try again  
+                flash('Email address already exists! Please login instead :)')
+                return render_template("authy/signup.html",form=signupForm)
 
-        # add the new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+            if repeatPassword != password:
+                flash('Passwords do not match!')
+                repopSignupForm = SignupForm()
+                repopSignupForm.emailField.data = signupForm.emailField.data
+                repopSignupForm.nameField.data = signupForm.nameField.data
+                return render_template("authy/signup.html",form=repopSignupForm)
 
-        login_user(new_user)
-        return redirect(url_for('dca.dcaSetup'))
+            # create new user with the form data. Hash the password so plaintext version isn't saved.
+            new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
+
+            # add the new user to the database
+            db.session.add(new_user)
+            db.session.commit()
+
+            login_user(new_user)
+            return redirect(url_for('dca.dcaSetup'))
+
+        except:
+            current_app.logger.exception("Could not signup user {}!".format(email))
+            db.session.rollback()
+            return redirect(url_for('main.index'))
 
 
 

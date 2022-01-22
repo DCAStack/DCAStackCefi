@@ -29,10 +29,15 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def set_password(self, password, commit=False):
+         
         self.password = generate_password_hash(password, method='sha256')
 
-        if commit:
-            db.session.commit()
+        try:
+            if commit:
+                db.session.commit()
+        except:
+            current_app.logger.exception("Could not set_password!")
+            db.session.rollback()
 
     def get_reset_token(self, expires=500):
         return jwt.encode({'reset_password': self.email, 'exp': time() + expires},
@@ -58,20 +63,27 @@ class User(UserMixin, db.Model):
     @staticmethod
     def create_user(username, password, email):
 
-        user_exists = User.query.filter_by(username=username).first()
-        if user_exists:
-            return False
+        try:
 
-        user = User()
+            user_exists = User.query.filter_by(username=username).first()
+            if user_exists:
+                return False
 
-        user.username = username
-        user.password = user.set_password(password)
-        user.email = email
+            user = User()
 
-        db.session.add(user)
-        db.session.commit()
+            user.username = username
+            user.password = user.set_password(password)
+            user.email = email
 
-        return True
+            db.session.add(user)
+            db.session.commit()
+
+            return user
+
+        except:
+            current_app.logger.exception("Could not create_user {}!".format(email))
+            db.session.rollback()
+            return None
 
 
 class dcaSchedule(db.Model):
@@ -149,5 +161,6 @@ class dcaSchedule(db.Model):
             return True
 
         except Exception as e:
+            db.session.rollback()
             current_app.logger.exception("Could not create_schedule!")
             return False

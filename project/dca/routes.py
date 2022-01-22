@@ -56,81 +56,89 @@ def get_exchange_apiNeededCreds(exchange_id):
 @login_required
 def delete_dcaSchedule(id):
     if request.method == 'POST':
-        instanceObj = {}
-        entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
-        for x in entry:
-            if x.id == int(id):
-                db.session.delete(dcaSchedule.query.get(id))
-                db.session.commit()
 
-                instanceObj["status"] = "Delete"
-                instanceObj["name"] = x.dca_instance
+        try:
+            instanceObj = {}
+            entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
+            for x in entry:
+                if x.id == int(id):
+                    db.session.delete(dcaSchedule.query.get(id))
+                    db.session.commit()
 
-        return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
+                    instanceObj["status"] = "Delete"
+                    instanceObj["name"] = x.dca_instance
 
+            return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
-# @bp.route('/dcaschedule/edit/<id>', methods=['POST'])
-# @login_required
-# def edit_dcaSchedule(id):
-#     if request.method == 'POST':
-#         instanceObj = {}
-#         entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
-#         for x in entry:
-#             if x.id == int(id):
-#                 pass
+        except:
+            current_app.logger.exception("Could not delete schedule {}!".format(id))
+            db.session.rollback()
+            return redirect(url_for('dca.dcaSetup'))
 
-#         return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
 @bp.route('/dcaschedule/resume/<id>', methods=['POST'])
 @login_required
 def resume_dcaSchedule(id):
 
     if request.method == 'POST':
-        try: 
-            form = DCA_Form()
-            entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
-            instanceObj = {}
-            for subQuery in entry:
-                if subQuery.id == int(id):
 
-                    #run synchronosly cause we need results in realtime and bypass async checks
-                    subQuery.isActive = True
-                    subQuery.dca_nextRun = datetime.datetime.now() #move next run to current date so that it will update
-                    db.session.commit()
-                    instanceStatus = async_placeMarketOrder_updateDb.run(subQuery,User.get_user(subQuery.user_id),True)
+        try:
+            try: 
+                form = DCA_Form()
+                entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
+                instanceObj = {}
+                for subQuery in entry:
+                    if subQuery.id == int(id):
 
-                    if not instanceStatus:
-                        instanceStatus = "Error"
-                        subQuery.isActive = False #should probs rollback instead
+                        #run synchronosly cause we need results in realtime and bypass async checks
+                        subQuery.isActive = True
+                        subQuery.dca_nextRun = datetime.datetime.now() #move next run to current date so that it will update
                         db.session.commit()
+                        instanceStatus = async_placeMarketOrder_updateDb.run(subQuery,User.get_user(subQuery.user_id),True)
 
-                    instanceObj["status"] = str(instanceStatus)
-                    instanceObj["name"] = subQuery.dca_instance
+                        if not instanceStatus:
+                            instanceStatus = "Error"
+                            subQuery.isActive = False #should probs rollback instead
+                            db.session.commit()
+
+                        instanceObj["status"] = str(instanceStatus)
+                        instanceObj["name"] = subQuery.dca_instance
+
+            except:
+                instanceStatus = "Error" #commonize this 
+                instanceObj["status"] = str(instanceStatus)
+                instanceObj["name"] = subQuery.dca_instance
+                subQuery.isActive = False
+                db.session.commit()
+
+            return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
         except:
-            instanceStatus = "Error" #commonize this 
-            instanceObj["status"] = str(instanceStatus)
-            instanceObj["name"] = subQuery.dca_instance
-            subQuery.isActive = False
-            db.session.commit()
-
-        return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
+            current_app.logger.exception("Could not start schedule {}!".format(id))
+            db.session.rollback()
+            return redirect(url_for('dca.dcaSetup'))
 
 @bp.route('/dcaschedule/pause/<id>', methods=['POST'])
 @login_required
 def pause_dcaSchedule(id):
     if request.method == 'POST':
-        instanceObj = {}
-        entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
-        for x in entry:
-            if x.id == int(id):
-                x.isActive = False
-                db.session.commit()
-                instanceObj["status"] = "Pause"
-                instanceObj["name"] = x.dca_instance
 
-        return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
+        try:
+            instanceObj = {}
+            entry = dcaSchedule.query.filter_by(user_id=session['_user_id']).all()
+            for x in entry:
+                if x.id == int(id):
+                    x.isActive = False
+                    db.session.commit()
+                    instanceObj["status"] = "Pause"
+                    instanceObj["name"] = x.dca_instance
 
+            return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
+
+        except:
+            current_app.logger.exception("Could not pause schedule {}!".format(id))
+            db.session.rollback()
+            return redirect(url_for('dca.dcaSetup'))
 
 
 def fetch_dcaSchedules():

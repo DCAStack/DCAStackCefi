@@ -26,6 +26,42 @@ Better answer: The way this repo is configured is that whenever the main branch 
 
 You will notice that this takes you to dcastack.herokuapp.com which is the direct connection to the heroku platform on which this entire website is hosted. This is the exact same as the dcastack.com domain. The only difference is the fact that dcastack.com is more convenient for SEO, spreading the word and enhanced with cloudflare.
 
+
 ## What if I wanted to self host?
 
-WIP
+First, download Docker here: https://www.docker.com/products/docker-desktop
+
+Second, let's see if we can get this webapp going. Open up a terminal, clone this repo and enter the folder. We are going to make a .env file in the current location you are in. Here is what that looks like:
+
+    SECRET_KEY=YouShouldRandomlyGenerateThis
+    MAIL_SERVER=YourMailServer
+    MAIL_PORT=YourPort
+    MAIL_USE_TLS=TrueorFalse
+    MAIL_USE_SSL=TrueorFalse
+    MAIL_USERNAME=YourMailUsername
+    MAIL_PASSWORD=YourMailPassword
+    REDIS_URL=redis://redis-server:6379/0
+    SET_SANDBOX=False
+    SET_DEBUG=False
+    SENTRY_KEY=Sign up here: https://sentry.io/ and get a key
+
+Third, we need a .flaskenv file, add this:
+
+    FLASK_APP=project
+    FLASK_ENV=development
+    FLASK_DEBUG=1
+
+Fourth, let's do the following outside the REPO directory. This will generate the sqlite DB for working locally.
+
+    python3 -m venv YOUR_ENV_NAME_HERE
+    source YOUR_ENV_NAME_HERE/bin/activate
+    cd REPO_NAME
+    pip install -r requirements.txt
+    python3 manage.py db init
+
+Finally, let's get docker up!
+
+    docker-compose up -d --build
+    
+And that's it. Open your browser to http://localhost:5004 to view the app or to http://localhost:5556 to view the Flower dashboard (this is for viewing celery tasks running).
+

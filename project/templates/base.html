@@ -178,10 +178,10 @@
             <div class="navbar-item">
                 <div class="buttons">
                     {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.signup') }}" class="button is-white">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-light">
                         <strong>Get Started</strong>
                     </a>
-                    <a href="{{ url_for('auth.login') }}" class="button is-white">
+                    <a href="{{ url_for('auth.login') }}" class="button is-light">
                         Log in
                     </a>
                     {% endif %}

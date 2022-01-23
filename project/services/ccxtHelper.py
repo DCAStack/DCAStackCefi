@@ -117,25 +117,36 @@ def place_market_order(exchange,trading_pair, dcaAmount,user,repeat=False):
                 if exchange.has['fetchOrderTrades']: 
 
                     orderDetails = exchange.fetch_order_trades(order['id'])
-
                     current_app.logger.info("fetchOrderTrades order details {}".format(orderDetails))
                     
-                    if not orderDetails:
-                        raise Exception("Order never filled for pair:{} on exchange: {} for order: {}!".format(trading_pair, exchange, order))
-                    orderPrice = 0
-                    orderAmount = 0
+                elif exchange.has['fetchOrder']:
+
+                    orderDetails = exchange.fetchOrder(order['id'])
+                    current_app.logger.info("fetchOrder order details {}".format(orderDetails))
+
+                else:
+                    current_app.logger.info("Sending simple order notif to user: {}".format(user.email))
+                    send_order_notification(user, exchange, dcaAmount, trading_pair)
+                    return True
+
+                if not orderDetails:
+                    raise Exception("Order never filled for pair:{} on exchange: {} for order: {}!".format(trading_pair, exchange, order))
+                orderPrice = 0
+                orderAmount = 0
+
+                if isinstance(orderDetails, (list)):
                     orderLen = len(orderDetails)
                     for execOrder in orderDetails:
                         orderPrice += execOrder['price']
                         orderAmount += execOrder['amount']
 
                     orderPrice = orderPrice/orderLen
-                    current_app.logger.info("Sending explicit order notif to user: {}".format(user.email))
-                    send_order_notification(user, exchange, dcaAmount, trading_pair, price=orderPrice, cryptoAmount=orderAmount)
-
                 else:
-                    current_app.logger.info("Sending simple order notif to user: {}".format(user.email))
-                    send_order_notification(user, exchange, dcaAmount, trading_pair)
+                    orderPrice += orderDetails['price']
+                    orderAmount += orderDetails['amount']
+
+                current_app.logger.info("Sending explicit order notif to user: {}".format(user.email))
+                send_order_notification(user, exchange, dcaAmount, trading_pair, price=orderPrice, cryptoAmount=orderAmount)
 
             except ccxt.errors.ArgumentsRequired:
                 current_app.logger.info("ccxt.errors.ArgumentsRequired Sending simple order notif to user: {}".format(user.email))

@@ -23,4 +23,12 @@
     <url>
         <loc>https://www.dcastack.com/contact</loc>
   </url>
+
+    <url>
+        <loc>https://www.dcastack.com/signup</loc>
+  </url>
+
+    <url>
+        <loc>https://www.dcastack.com/login</loc>
+  </url>
 </urlset>

@@ -63,5 +63,5 @@ Finally, let's get docker up!
 
     docker-compose up -d --build
     
-And that's it. Open your browser to http://localhost:5004 to view the app or to http://localhost:5556 to view the Flower dashboard (this is for viewing celery tasks running).
+And that's it. Open your browser to http://localhost:5000 to view the app or to http://localhost:5556 to view the Flower dashboard (this is for viewing celery tasks running).
 

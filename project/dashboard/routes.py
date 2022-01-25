@@ -101,9 +101,10 @@ def fetch_account_balance():
                     maxcap = 0
                     trueidx = 0
                     for i,value in enumerate(v):
-                        if currPrice[value]['usd_market_cap'] > maxcap:
-                            maxcap = currPrice[value]['usd_market_cap']
-                            trueidx = i
+                        if 'usd_market_cap' in currPrice[value]:
+                            if currPrice[value]['usd_market_cap'] > maxcap:
+                                maxcap = currPrice[value]['usd_market_cap']
+                                trueidx = i
                     inverse_dict[k] = v[trueidx]
                 else:
                     inverse_dict[k] = v[0]

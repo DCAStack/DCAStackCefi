@@ -129,10 +129,11 @@ def fetch_account_balance():
                     totalValue += coinValue
 
             #add fiat to query
-            coins["USD"] = [0,0,1]
-            coins["USD"][0] = round(freeFunds["USD"],2)
-            coins["USD"][1] = round(freeFunds["USD"],2)
-            totalValue += freeFunds["USD"]
+            if "USD" in freeFunds:
+                coins["USD"] = [0,0,1]
+                coins["USD"][0] = round(freeFunds["USD"],2)
+                coins["USD"][1] = round(freeFunds["USD"],2)
+                totalValue += freeFunds["USD"]
 
     except Exception as e:
         capture_err(e, session=session)

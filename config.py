@@ -23,4 +23,5 @@ class Config(object):
     REDIS_URL = os.environ.get('REDIS_URL')
     SET_SANDBOX = True if os.environ.get('SET_SANDBOX') == "true" else False
     IS_DEBUG = True if os.environ.get('SET_DEBUG') == "true" else False
-    SENTRY_KEY = os.environ.get('SENTRY_KEY')
+    SENTRY_FLASK_KEY = os.environ.get('SENTRY_FLASK_KEY')
+    SENTRY_CELERY_KEY = os.environ.get('SENTRY_CELERY_KEY')

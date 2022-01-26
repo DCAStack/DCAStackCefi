@@ -22,7 +22,8 @@ secure_headers = secure.Secure()
 SANDBOX_MODE = Config.SET_SANDBOX
 DEBUG_MODE = Config.IS_DEBUG
 SECRET_KEY = Config.SECRET_KEY
-SENTRY_KEY = Config.SENTRY_KEY
+SENTRY_FLASK_KEY = Config.SENTRY_FLASK_KEY
+SENTRY_CELERY_KEY = Config.SENTRY_CELERY_KEY
 db = SQLAlchemy()
 mail = Mail()
 jwt = JWTManager()
@@ -35,7 +36,7 @@ BEAT_INTERVAL = 5 #5 minutes
 
 if not DEBUG_MODE:
     sentry_sdk.init(
-    dsn=SENTRY_KEY,
+    dsn=SENTRY_FLASK_KEY,
     integrations=[FlaskIntegration()],
     traces_sample_rate=1.0
 )

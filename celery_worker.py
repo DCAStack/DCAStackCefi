@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import os
-from project import celery, create_app, DEBUG_MODE, SENTRY_KEY
+from project import celery, create_app, DEBUG_MODE, SENTRY_CELERY_KEY
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 
 if not DEBUG_MODE:
     sentry_sdk.init(
-        dsn=SENTRY_KEY,
+        dsn=SENTRY_CELERY_KEY,
         integrations=[CeleryIntegration()]
     )
 

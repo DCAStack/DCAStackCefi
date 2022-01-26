@@ -43,7 +43,8 @@ Second, let's see if we can get this webapp going. Open up a terminal, clone thi
     REDIS_URL=redis://redis-server:6379/0
     SET_SANDBOX=False
     SET_DEBUG=False
-    SENTRY_KEY=Sign up here: https://sentry.io/ and get a key
+    SENTRY_FLASK_KEY=Sign up here: https://sentry.io/ and get a key for flask project
+    SENTRY_CELERY_KEY=Sign up here: https://sentry.io/ and get a key for celery project
 
 Third, we need a .flaskenv file, add this:
 

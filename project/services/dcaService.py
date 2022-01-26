@@ -7,6 +7,7 @@ from project.services.ccxtHelper import place_market_order, create_exchangeConne
 from project.services.mailService import send_order_notification
 import ccxt
 import requests
+from project.services.sentryService import capture_err
 
 @celery.task(serializer='pickle',autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 10})
 def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
@@ -70,6 +71,7 @@ def async_placeMarketOrder_updateDb(subQuery,user,bypassAsync=False):
         send_order_notification(user, exchange_class_name, dcaAmount, trading_pair,errorMsg=e)
 
     except Exception as e:
+        capture_err(e, userEmail=user.email)
         current_app.logger.exception("async_place_market_order GeneralException")
 
         if async_placeMarketOrder_updateDb.request.retries == async_placeMarketOrder_updateDb.max_retries:
@@ -102,6 +104,7 @@ def run_dcaSchedule():
                 async_placeMarketOrder_updateDb.delay(subQuery,User.get_user(subQuery.user_id))
 
     except Exception as e:
+        capture_err(e)
         current_app.logger.exception("dca scheduled failed!")
         db.session.rollback() #rollback in crash
 

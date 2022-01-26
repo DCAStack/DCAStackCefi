@@ -3,6 +3,7 @@ from flask import current_app
 from .mailService import send_order_notification
 from project import SANDBOX_MODE
 from project.models import dcaSchedule
+from project.services.sentryService import capture_err
 
 def create_exchangeConnection(exchange_id,api_key, api_secret,api_pass,api_uid,sandboxMode=True,needBal=False,isEncrypted=True):
 
@@ -175,5 +176,6 @@ def place_market_order(exchange,trading_pair, dcaAmount,user,repeat=False):
         raise ccxt.NetworkError("could not connect to exchange!")
 
     except Exception as e:
+        capture_err(e,userEmail=user.email)
         current_app.logger.exception("place_market_order GeneralException for pair:{} on exchange: {} for order: {}!".format(trading_pair, exchange, order))
         raise Exception("something went wrong with the API! Please contact us :(")

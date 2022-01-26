@@ -2,8 +2,7 @@ from flask_mail import Message
 from flask import render_template
 from project import mail,celery, DEBUG_MODE
 from flask import current_app
-
-
+from project.services.sentryService import capture_err
 
 @celery.task(serializer='pickle',autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 60})
 def send_async_email(msg):
@@ -12,6 +11,7 @@ def send_async_email(msg):
         try:
             mail.send(msg)
         except Exception as e:
+            capture_err(e)
             current_app.logger.exception("async mail error: {}".format(msg))
     else:
         current_app.logger.info("Mocking email: {}".format(msg))

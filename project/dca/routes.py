@@ -14,6 +14,7 @@ from project.dca.forms import DCA_Form
 from project.services.dcaService import async_placeMarketOrder_updateDb
 import ast
 from project.models import dcaSchedule
+from project.services.sentryService import capture_err
 
 @bp.route('/exchangeinfo/trading_pairs/<exchange_id>')
 @login_required
@@ -70,7 +71,8 @@ def delete_dcaSchedule(id):
 
             return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
-        except:
+        except Exception as e:
+            capture_err(e,session=session)
             current_app.logger.exception("Could not delete schedule {}!".format(id))
             db.session.rollback()
             return redirect(url_for('dca.dcaSetup'))
@@ -113,7 +115,8 @@ def resume_dcaSchedule(id):
 
             return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
-        except:
+        except Exception as e:
+            capture_err(e,session=session)
             current_app.logger.exception("Could not start schedule {}!".format(id))
             db.session.rollback()
             return redirect(url_for('dca.dcaSetup'))
@@ -135,7 +138,8 @@ def pause_dcaSchedule(id):
 
             return redirect(url_for("dca.dcaSetup",instanceStatus=instanceObj))
 
-        except:
+        except Exception as e:
+            capture_err(e,session=session)
             current_app.logger.exception("Could not pause schedule {}!".format(id))
             db.session.rollback()
             return redirect(url_for('dca.dcaSetup'))
@@ -234,28 +238,29 @@ def dcaSetup():
             return render_template('user/dca.html', form=repopulateForm, instanceStatus=None,dca_scheduleQuery=fetch_dcaSchedules())
 
         except AuthenticationError as e:
-            current_app.logger.exception("create_exchangeConnection AuthenticationError")
+            current_app.logger.warning("create_exchangeConnection AuthenticationError")
             flash('Please recheck your API details.')
 
             return render_template('user/dca.html', form=repopulateForm,instanceStatus=None, dca_scheduleQuery=fetch_dcaSchedules())
 
         except InsufficientFunds as e:
-            current_app.logger.exception("create_exchangeConnection InsufficientFunds")
+            current_app.logger.warning("create_exchangeConnection InsufficientFunds")
             flash('Please ensure you have enough funds to place an order.')
 
             return render_template('user/dca.html', form=repopulateForm, instanceStatus=None,dca_scheduleQuery=fetch_dcaSchedules())
 
         except InvalidOrder as e:
-            current_app.logger.exception("create_exchangeConnection InvalidOrder")
+            current_app.logger.warning("create_exchangeConnection InvalidOrder")
             flash('Please increase purchase amount or contact us for further assistance!')
             return render_template('user/dca.html', form=repopulateForm, instanceStatus=None,dca_scheduleQuery=fetch_dcaSchedules())
 
         except NetworkError as e:
-            current_app.logger.exception("create_exchangeConnection NetworkError")
+            current_app.logger.warning("create_exchangeConnection NetworkError")
             flash('Could not connect because exchange is unreachable. Please try again later.')
             return render_template('user/dca.html', form=repopulateForm, instanceStatus=None,dca_scheduleQuery=fetch_dcaSchedules())
 
         except Exception as e:
+            capture_err(e,session=session)
             current_app.logger.exception("create_exchangeConnection GeneralException")
             flash('Connection issue, please double check your API details or contact us!')
             return render_template('user/dca.html', form=repopulateForm, instanceStatus=None,dca_scheduleQuery=fetch_dcaSchedules())

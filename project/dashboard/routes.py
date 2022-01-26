@@ -12,6 +12,7 @@ from sqlalchemy import text
 from project import executor
 import concurrent.futures
 import collections, functools, operator
+from project.services.sentryService import capture_err
 
 cg = CoinGeckoAPI()
 allCoinList = cg.get_coins_list()
@@ -29,7 +30,8 @@ def get_exchange_balances(x):
                 freeFunds[k] = 0
             freeFunds[k] += v if v else 0
 
-    except:
+    except Exception as e:
+        capture_err(e, session=session)
         current_app.logger.warning("fetch_account_balance failed for exchange: {}".format(x.exchange_id))
 
     return freeFunds
@@ -132,7 +134,8 @@ def fetch_account_balance():
             coins["USD"][1] = round(freeFunds["USD"],2)
             totalValue += freeFunds["USD"]
 
-    except:
+    except Exception as e:
+        capture_err(e, session=session)
         current_app.logger.exception("fetch_account_balance GeneralError")
 
     coins = dict(sorted(coins.items(), key=lambda item: item[1], reverse=True))

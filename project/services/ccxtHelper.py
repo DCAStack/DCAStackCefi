@@ -135,16 +135,27 @@ def place_market_order(exchange,trading_pair, dcaAmount,user,repeat=False):
                 orderPrice = 0
                 orderAmount = 0
 
-                if isinstance(orderDetails, (list)):
+                if isinstance(orderDetails, (list)): #multiple orders
                     orderLen = len(orderDetails)
                     for execOrder in orderDetails:
-                        orderPrice += execOrder['price']
-                        orderAmount += execOrder['amount']
+                        if execOrder['price'] and execOrder['amount'] and isinstance(execOrder['price'], (int,float)) and isinstance(execOrder['amount'], (int,float)):
+                            orderPrice += execOrder['price']
+                            orderAmount += execOrder['amount']
+                        else:
+                            current_app.logger.info("Sending simple multi order notif to user: {}".format(user.email))
+                            send_order_notification(user, exchange, dcaAmount, trading_pair)
+                            return True
 
                     orderPrice = orderPrice/orderLen
-                else:
-                    orderPrice += orderDetails['price']
-                    orderAmount += orderDetails['amount']
+
+                else: #single order
+                    if orderDetails['price'] and orderDetails['amount'] and isinstance(orderDetails['price'], (int,float)) and isinstance(orderDetails['amount'], (int,float)):
+                        orderPrice += orderDetails['price']
+                        orderAmount += orderDetails['amount']
+                    else:
+                        current_app.logger.info("Sending simple single order notif to user: {}".format(user.email))
+                        send_order_notification(user, exchange, dcaAmount, trading_pair)
+                        return True
 
                 current_app.logger.info("Sending explicit order notif to user: {}".format(user.email))
                 send_order_notification(user, exchange, dcaAmount, trading_pair, price=orderPrice, cryptoAmount=orderAmount)

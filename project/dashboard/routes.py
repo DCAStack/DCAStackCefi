@@ -116,17 +116,18 @@ def fetch_account_balance():
             for coinId,coinVal in currPrice.items():
                 if coinId in verifiedCoins: #verified mktcap only
                 
-                    coinParsedVal = float(coinVal['usd'])
+                    if "usd" in coinVal: #check
+                        coinParsedVal = float(coinVal['usd'])
 
-                    if matchedIds[coinId] not in coins:
-                        coins[matchedIds[coinId]] = [0,0,0] #fiat, native, price
+                        if matchedIds[coinId] not in coins:
+                            coins[matchedIds[coinId]] = [0,0,0] #fiat, native, price
 
-                    coinValue = freeFunds[matchedIds[coinId]] * coinParsedVal
-                    coins[matchedIds[coinId]][0] += round(coinValue,2)
-                    coins[matchedIds[coinId]][1] += freeFunds[matchedIds[coinId]]
-                    coins[matchedIds[coinId]][2] += round(coinParsedVal,4)
+                        coinValue = freeFunds[matchedIds[coinId]] * coinParsedVal
+                        coins[matchedIds[coinId]][0] += round(coinValue,2)
+                        coins[matchedIds[coinId]][1] += freeFunds[matchedIds[coinId]]
+                        coins[matchedIds[coinId]][2] += round(coinParsedVal,4)
 
-                    totalValue += coinValue
+                        totalValue += coinValue
 
             #add fiat to query
             if "USD" in freeFunds:

@@ -92,8 +92,10 @@ def place_market_order(exchange,trading_pair, dcaAmount,user,repeat=False):
                 maxAskPrice = got['asks'][0][0]
                 lastAskAmount = got['asks'][0][1]
 
-                formatted_amount = exchange.amount_to_precision(trading_pair, dcaAmount/maxAskPrice)
-                formatted_price = exchange.price_to_precision(trading_pair, maxAskPrice)
+                # formatted_amount = exchange.amount_to_precision(trading_pair, dcaAmount/maxAskPrice)
+                # formatted_price = exchange.price_to_precision(trading_pair, maxAskPrice)
+                formatted_amount = dcaAmount/maxAskPrice
+                formatted_price = maxAskPrice
 
                 current_app.logger.info("place market order just amount for pair:{} on exchange: {} fmt_amount: {} fmt_price: {} dca_amt: {} lastAskSize: {}".format(trading_pair, exchange, formatted_amount, formatted_price, dcaAmount, lastAskAmount))
                 amount = formatted_amount  # how much CRYPTO you want to market-buy, change for your value here
@@ -105,8 +107,8 @@ def place_market_order(exchange,trading_pair, dcaAmount,user,repeat=False):
             maxAskPrice = got['asks'][0][0]
             lastAskAmount = got['asks'][0][1]
 
-            formatted_amount = exchange.amount_to_precision(trading_pair, dcaAmount/maxAskPrice)
-            formatted_price = exchange.price_to_precision(trading_pair, maxAskPrice)
+            formatted_amount = dcaAmount/maxAskPrice
+            formatted_price = maxAskPrice
 
             current_app.logger.info("place emulated market order for pair:{} on exchange: {} fmt_amount: {} fmt_price: {} dca_amt: {} lastAskSize: {}".format(trading_pair, exchange, formatted_amount, formatted_price, dcaAmount, lastAskAmount))
             order = exchange.create_limit_buy_order(trading_pair, formatted_amount, formatted_price) #amount, price

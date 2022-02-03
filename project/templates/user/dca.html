@@ -225,7 +225,7 @@
                       {% if (dca_scheduleRows.isActive == "Running") %}
                       <p class="control">
                       <form method="POST" action="{{ url_for('dca.pause_dcaSchedule', id=dca_scheduleRows.id) }}"
-                        onSubmit="return confirm('Are you sure you wish to pause this schedule? This will pause the schedule until you choose to resume!');">
+                        onSubmit="return pauseDCA()">
                         <button type="submit" class="button is-warning is-small is-fullwidth" id="pause_row_dca">
                           <span class="icon is-small">
                             <i class="fas fa-pause"></i>
@@ -239,7 +239,7 @@
 
                       <p class="control">
                       <form method="POST" action="{{ url_for('dca.resume_dcaSchedule', id=dca_scheduleRows.id) }}"
-                        onSubmit="return confirm('Are you sure you wish to start this schedule? This will start the schedule if there are enough funds!');">
+                        onSubmit="return resumeDCA()">
                         <button type="submit" class="button is-success is-small is-fullwidth" id="start_row_dca">
                           <span class="icon is-small">
                             <i class="fas fa-play"></i>
@@ -254,7 +254,7 @@
 
                       <p class="control">
                       <form method="POST" action="{{ url_for('dca.delete_dcaSchedule', id=dca_scheduleRows.id) }}"
-                        onSubmit="return confirm('Are you sure you wish to delete this schedule? This will delete all API details!');">
+                        onSubmit="return deleteDCA()">
                         <button type="submit" class="button is-danger is-small is-fullwidth" id="delete_row_dca">
                           <span class="icon is-small">
                             <i class="fas fa-trash"></i>
@@ -288,6 +288,36 @@
 
   function loading() {
     $('#loader').removeClass('hidden')
+  }
+
+  function pauseDCA() {
+    if (confirm('Are you sure you wish to pause this schedule? This will pause the schedule until you choose to resume!') == true) {
+      loading()
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  function resumeDCA() {
+    if (confirm('Are you sure you wish to start this schedule? This will start the schedule if there are enough funds!') == true) {
+      loading()
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  function deleteDCA() {
+    if (confirm('Are you sure you wish to delete this schedule? This will delete all API details!') == true) {
+      loading()
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   function postDCA() {

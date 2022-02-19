@@ -1,5 +1,5 @@
 celery==4.4.7
-ccxt==1.68.16
+ccxt==1.*
 email-validator==1.1.2
 Flask==2.0.2
 Flask-JWT-Extended==3.24.1

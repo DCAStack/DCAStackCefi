@@ -5,7 +5,7 @@
 
 **Full Docs: https://docs.dcastack.com/**
 
-**Support Us: https://www.dcastack.com/donate/**
+**Support Us: https://www.dcastack.com/donate**
 
 
 This github repo was made in the spirit of **Don't Trust, Verify**. I totally understand the hesitation of using web apps created by strangers on the internet. Especially when it comes to sensitive information like API keys and your crypto. So to help foster trust and gather early user feedback, I'm releasing the source code that directly builds the production environment. 

@@ -38,7 +38,7 @@ if not DEBUG_MODE:
     sentry_sdk.init(
     dsn=SENTRY_FLASK_KEY,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0
+    traces_sample_rate=0.8
 )
 
 # if SANDBOX_MODE:

@@ -1,4 +1,4 @@
-celery==4.4.7
+celery==5.2.2
 ccxt==1.*
 email-validator==1.1.2
 Flask==2.0.2

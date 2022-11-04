@@ -16,7 +16,7 @@ jinja2-time==0.2.0
 PyJWT==1.7.1
 PyYAML==5.4
 SQLAlchemy==1.4.26
-Twisted==18.9.0
+Twisted==22.10.0
 Werkzeug==2.0.2
 wsproto==1.0.0
 WTForms==3.0.0
